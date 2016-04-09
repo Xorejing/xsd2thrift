@@ -37,6 +37,7 @@ import java.util.TreeSet;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -153,13 +154,17 @@ public class XSDParser {
 	 * @throws Xsd2ThriftException
 	 *             if parsing fails
 	 */
-	public void parse(InputSource source, boolean debug) throws Xsd2ThriftException {
+	public void parse(InputSource source, EntityResolver entityResolver, boolean debug) throws Xsd2ThriftException {
 		ErrorHandler errorHandler = debug ? new XsdErrorHandler() : null;
 		try {
 			XSOMParser parser = new XSOMParser(new JAXPParser(saxParserFactory));
 			if (null != errorHandler) {
 				parser.setErrorHandler(errorHandler);
 			}
+			if (null != entityResolver) {
+				parser.setEntityResolver(entityResolver);
+			}
+
 			parser.parse(source);
 
 			interpretResult(parser.getResult());
@@ -419,7 +424,8 @@ public class XSDParser {
 			if (xs.getFacet("enumeration") != null) {
 				typeName = elementName != null ? elementName + "Type" : generateAnonymousName();
 			} else {
-				// can't use elementName here as it might not be unique (test-range.xsd)
+				// can't use elementName here as it might not be unique
+				// (test-range.xsd)
 				typeName = generateAnonymousName();
 			}
 		}
@@ -427,7 +433,8 @@ public class XSDParser {
 		if (xs.isRestriction() && xs.getFacet("enumeration") != null) {
 			createEnum(typeName, xs.asRestriction());
 		} else {
-			// This is just a restriction on a basic type, find parent and map it to the type
+			// This is just a restriction on a basic type, find parent and map
+			// it to the type
 			String baseTypeName = typeName;
 			while (xs != null && !basicTypes.contains(baseTypeName)) {
 				xs = xs.getBaseType().asSimpleType();

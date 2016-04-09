@@ -23,6 +23,8 @@
  */
 package com.github.tranchis.xsd2thrift;
 
+import org.xml.sax.EntityResolver;
+
 /**
  * @author marug
  *
@@ -106,7 +108,7 @@ public class Main {
 			}
 
 			Xsd2Thrift xsd2Thrift = new Xsd2Thrift(packageName, protocol, nestEnums);
-			xsd2Thrift.parseXsd(xschema, fileParam, debug);
+			xsd2Thrift.parseXsd(xschema, fileParam, (EntityResolver) null, debug);
 
 		}
 	}

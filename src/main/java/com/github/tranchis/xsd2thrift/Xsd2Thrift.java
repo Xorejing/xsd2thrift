@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.TreeMap;
 
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 import com.github.tranchis.xsd2thrift.marshal.IMarshaller;
@@ -117,9 +118,11 @@ public class Xsd2Thrift {
 	 * @param debug
 	 *            whether SAX should report parsing errors
 	 * @throws Xsd2ThriftException
-	 *             a {@link Xsd2ThriftException} if creation of the {@link XSDParser} or parsing failed
+	 *             a {@link Xsd2ThriftException} if creation of the
+	 *             {@link XSDParser} or parsing failed
 	 */
-	public void parseXsd(String streamFilename, String destfileName, boolean debug) throws Xsd2ThriftException {
+	public void parseXsd(String streamFilename, String destfileName, EntityResolver entityResolver, boolean debug)
+	        throws Xsd2ThriftException {
 		InputSource source = null;
 		try {
 			File streamFile = new File(streamFilename);
@@ -132,7 +135,7 @@ public class Xsd2Thrift {
 				System.out.println("Parsing " + streamFilename + " to "
 				        + (null == destfileName ? "system out" : destfileName) + ".");
 			}
-			this.createXsdParser(destfileName).parse(source, debug);
+			this.createXsdParser(destfileName).parse(source, entityResolver, debug);
 		} catch (IOException e) {
 			throw new Xsd2ThriftException(e);
 		}
